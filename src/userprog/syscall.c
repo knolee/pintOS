@@ -3,6 +3,7 @@
 #include <syscall-nr.h>
 #include "threads/interrupt.h"
 #include "threads/thread.h"
+#include "threads/vaddr.h"
 
 static void syscall_handler (struct intr_frame *);
 
@@ -17,4 +18,17 @@ syscall_handler (struct intr_frame *f UNUSED)
 {
   printf ("system call!\n");
   thread_exit ();
+}
+
+// Check if a user provided pointer is correct.
+// Check if NULL or not below PHYS_BASE
+// If so, free memory and exit process
+int check_pointer(void *pointer) {
+  if (pointer == NULL || !is_user_vaddr(pointer)) {
+    process_exit();
+
+    return 0;
+  }
+
+  return 1;
 }
