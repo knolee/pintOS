@@ -4,6 +4,7 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "threads/init.h"
 
 static void syscall_handler (struct intr_frame *);
 
@@ -31,4 +32,8 @@ int check_pointer(void *pointer) {
   }
 
   return 1;
+}
+
+void halt(void) {
+  shutdown_power_off();
 }
