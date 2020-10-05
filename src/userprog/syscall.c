@@ -17,8 +17,52 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
-  printf ("system call!\n");
-  thread_exit ();
+  uint32_t *esp;
+  esp = f->esp;
+  switch(*esp){
+
+    case SYS_HALT:
+      printf("syscall: halt\n");
+      halt();
+
+    case SYS_EXIT:
+      printf("syscall: exit\n");
+
+    case SYS_EXEC:
+      printf("syscall: exec\n");
+
+    case SYS_WAIT:
+      printf("syscall: wait\n");
+
+    case SYS_CREATE:
+      printf("syscall: create\n");
+
+    case SYS_REMOVE:
+      printf("syscall: remove\n");
+
+    case SYS_OPEN:
+      printf("syscall: open\n");
+
+    case SYS_FILESIZE:
+      printf("syscall: filesize\n");
+
+    case SYS_READ:
+      printf("syscall: read\n");
+
+    case SYS_WRITE:
+      printf("syscall: write\n");
+
+    case SYS_SEEK:
+      printf("syscall: seek\n");
+
+    case SYS_TELL:
+      printf("syscall: tell\n");
+
+    case SYS_CLOSE:
+      printf("syscall: close\n");
+  }
+  //printf ("system call!\n");
+  //thread_exit ();
 }
 
 // Check if a user provided pointer is correct.
