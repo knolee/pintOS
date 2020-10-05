@@ -2,6 +2,9 @@
 #define USERPROG_SYSCALL_H
 
 void syscall_init (void);
+
+int check_pointer(void *pointer);
+
 // System Call Implementation (Y/N)
 // System Call: halt N
 void halt (void);
