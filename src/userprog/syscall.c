@@ -17,6 +17,19 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
+  // See which system call is needed.
+  // System call causes interrupt and stores type of call in ESP reg
+  void *esp = f->esp;
+
+  check_pointer(esp);
+
+  // Switch depending on system call
+  switch (*(int *)esp) {
+    case SYS_HALT:
+      halt();
+      break;
+  }
+
   printf ("system call!\n");
   thread_exit ();
 }

@@ -8,7 +8,7 @@ void halt(void);
 // System Call: exit N
 void exit(int status);
 // System Call: exec N
-pid_t exec(const char *cmd_line);
+// pid_t exec(const char *cmd_line);
 // System Call: wait N
 // System Call: create N
 // System Call: remove N
