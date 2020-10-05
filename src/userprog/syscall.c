@@ -18,7 +18,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   uint32_t *esp;
   esp = f->esp;
   
-  check_pointer(esp);
+  // check_pointer(esp);
   
   switch(*esp){
 
@@ -68,6 +68,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 // Check if a user provided pointer is correct.
 // Check if NULL or not below PHYS_BASE
 // If so, free memory and exit process
+/*
 int check_pointer (void *pointer) {
   if (pointer == NULL || !is_user_vaddr(pointer)) {
     process_exit();
@@ -77,6 +78,7 @@ int check_pointer (void *pointer) {
 
   return 1;
 }
+*/
 
 void halt (void) {
   shutdown_power_off();
