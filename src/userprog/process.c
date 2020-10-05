@@ -19,19 +19,20 @@
 #include "threads/vaddr.h"
 
 static thread_func start_process NO_RETURN;
-static bool load (const char *cmdline, void (**eip) (void), void **esp);
+static bool load (const char *file_name, void (**eip) (void), void **esp);
+static void start_process (void *file_name_);
 
 /* used for argument passing */
 struct prog_args {
 	char *prog_name;
 	char *prog_arg_ptr; // Everything past the program name, this is in string form (processing done later)
+};
 
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
    thread id, or TID_ERROR if the thread cannot be created. */
-tid_t
-process_execute (const char *command_args) 
+tid_t process_execute (const char *command_args) 
 {
   char *ca_copy;
   char *file_name;
@@ -51,7 +52,7 @@ process_execute (const char *command_args)
   args.prog_name = strtok_r(command_args, " ", &args.prog_arg_ptr);
 
   /* Create a new thread to execute command_args. */
-  tid = thread_create (args.prog_name, PRI_DEFAULT, start_process, &prog_args);
+  tid = thread_create (args.prog_name, PRI_DEFAULT, start_process, &args);
   if (tid == TID_ERROR)
     palloc_free_page (ca_copy); 
   return tid;
@@ -59,8 +60,7 @@ process_execute (const char *command_args)
 
 /* A thread function that loads a user process and starts it
    running. */
-static void
-start_process (void *file_name_)
+static void start_process (void *file_name_)
 {
   char *file_name = file_name_;
   struct intr_frame if_;
