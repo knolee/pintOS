@@ -21,27 +21,39 @@
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
+/* used for argument passing */
+struct prog_args {
+	char *prog_name;
+	char *prog_arg_ptr; // Everything past the program name, this is in string form (processing done later)
+
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
    before process_execute() returns.  Returns the new process's
    thread id, or TID_ERROR if the thread cannot be created. */
 tid_t
-process_execute (const char *file_name) 
+process_execute (const char *command_args) 
 {
-  char *fn_copy;
+  char *ca_copy;
+  char *file_name;
   tid_t tid;
+  char *saveptr;
+  struct prog_args args;
 
-  /* Make a copy of FILE_NAME.
+
+  /* Make a copy of command_args.
      Otherwise there's a race between the caller and load(). */
-  fn_copy = palloc_get_page (0);
-  if (fn_copy == NULL)
+  ca_copy = palloc_get_page (0);
+  if (ca_copy == NULL)
     return TID_ERROR;
-  strlcpy (fn_copy, file_name, PGSIZE);
+  strlcpy (ca_copy, command_args, PGSIZE);
 
-  /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  /* Separate program and arguments */
+  args.prog_name = strtok_r(command_args, " ", &args.prog_arg_ptr);
+
+  /* Create a new thread to execute command_args. */
+  tid = thread_create (args.prog_name, PRI_DEFAULT, start_process, &prog_args);
   if (tid == TID_ERROR)
-    palloc_free_page (fn_copy); 
+    palloc_free_page (ca_copy); 
   return tid;
 }
 
@@ -88,7 +100,8 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
-  return -1;
+	while(1);
+  	return -1;
 }
 
 /* Free the current process's resources. */
