@@ -17,6 +17,9 @@ syscall_handler (struct intr_frame *f UNUSED)
 {
   uint32_t *esp;
   esp = f->esp;
+  
+  check_pointer(esp);
+  
   switch(*esp){
 
     case SYS_HALT:
