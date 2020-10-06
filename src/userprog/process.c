@@ -458,65 +458,65 @@ setup_stack (void **esp, char * args)
     }
 
     //// Push onto stack
-    //int argc=0;
+    int argc=0;
 
-    //// Store arguments as tokens (max args = 255)
-    //char * tokens[255];
+    // Store arguments as tokens (max args = 255)
+    char * tokens[255];
 
-    //for(tokens[argc]=strtok_r(NULL, " ",&args); tokens[argc] !=NULL; tokens[argc]=strtok_r(NULL, " ",&args)) {
-      //// increment arguments
-      //argc++;
-    //}
+    for(tokens[argc]=strtok_r(NULL, " ",&args); tokens[argc] !=NULL; tokens[argc]=strtok_r(NULL, " ",&args)) {
+      // increment arguments
+      argc++;
+    }
 
-    //// allocate memory to argv
-    //char * argv[argc+1];
-    //// Set last to null
-    //argv[argc] = malloc(sizeof(char));
-    //argv[argc] = 0;
+    // allocate memory to argv
+    char * argv[argc+1];
+    // Set last to null
+    argv[argc] = malloc(sizeof(char));
+    argv[argc] = 0;
 
 
-    //// push everything onto stack
-    //int count = argc - 1;
-    //while(count >=0) {
-      ///* 
-      //to push: 
-      //- move esp back by length of argument
-      //- store argument in esp location
-      //- store argument location in argvj
-      //*/
-      //*esp -= strlen(tokens[count]) + 1;
-      //memcpy(*esp, tokens[count], strlen(tokens[count])+1);
-      //argv[count] = malloc(strlen((char *)*esp)+1);
-      //argv[count] = *esp;
-    //}
+    // push everything onto stack
+    int count = argc - 1;
+    while(count >=0) {
+      /* 
+      to push: 
+      - move esp back by length of argument
+      - store argument in esp location
+      - store argument location in argvj
+      */
+      *esp -= strlen(tokens[count]) + 1;
+      memcpy(*esp, tokens[count], strlen(tokens[count])+1);
+      argv[count] = malloc(strlen((char *)*esp)+1);
+      argv[count] = *esp;
+    }
 
-    //// word-align, make address a multiple of 4
-    //char word_align = 0; // null character
-    //while((int)*esp%4 != 0) {
-      //*esp -= sizeof(char);
-      //memcpy(*esp, &word_align, sizeof(char));
-    //}
+    // word-align, make address a multiple of 4
+    char word_align = 0; // null character
+    while((int)*esp%4 != 0) {
+      *esp -= sizeof(char);
+      memcpy(*esp, &word_align, sizeof(char));
+    }
 
-    //// push argv elements onto stack
-    //count = argc;
+    // push argv elements onto stack
+    count = argc;
 
-    //while(count >=0) {
-      //*esp -= 4;
-      //memcpy(*esp,argv[count],4);
-      //count--;
-    //}
+    while(count >=0) {
+      *esp -= 4;
+      memcpy(*esp,argv[count],4);
+      count--;
+    }
     
-    //// place argv on stack
-    //*esp -= 4;
-    //memcpy(*esp, &argv, sizeof(char**));
+    // place argv on stack
+    *esp -= 4;
+    memcpy(*esp, &argv, sizeof(char**));
 
-    //// place argc on stack
-    //*esp -= sizeof(int);
-    //memcpy(*esp, &argc, sizeof(int));
+    // place argc on stack
+    *esp -= sizeof(int);
+    memcpy(*esp, &argc, sizeof(int));
 
-    //// fake return address
-    //*esp -= 4;
-    //memcpy(*esp, &word_align, sizeof(void*));
+    // fake return address
+    *esp -= 4;
+    memcpy(*esp, &word_align, sizeof(void*));
 
 
 
