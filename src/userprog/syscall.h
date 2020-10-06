@@ -3,6 +3,12 @@
 
 #include <stdbool.h>
 
+struct fd {
+  int fdesc;
+  tid_t thread;
+  struct file *f;
+}
+
 void syscall_init (void);
 // System Call Implementation (Y/N)
 // System Call: halt N
