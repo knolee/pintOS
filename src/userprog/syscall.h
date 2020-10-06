@@ -1,6 +1,8 @@
 #ifndef USERPROG_SYSCALL_H
 #define USERPROG_SYSCALL_H
 
+#include <stdbool.h>
+
 void syscall_init (void);
 // System Call Implementation (Y/N)
 // System Call: halt N
@@ -9,7 +11,7 @@ void halt(void);
 void exit(int status);
 // System Call: exec N
 // pid_t exec(const char *cmd_line);
-// System Call: wait N
+bool create (const char *file, unsigned initial_size);
 // System Call: create N
 // System Call: remove N
 // System Call: open N
