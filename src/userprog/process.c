@@ -26,7 +26,7 @@ struct prog_args {
 
 static bool load (struct prog_args *cmd, void (**eip) (void), void **esp);
 static thread_func start_process NO_RETURN;
-static void start_process (void *file_name_);
+static void start_process (void *cmd_);
 
 
 /* Starts a new thread running a user program loaded from
@@ -48,7 +48,7 @@ tid_t process_execute (const char *command_args)
   strlcpy (ca_copy, command_args, PGSIZE);
 
   /* Separate program and arguments */
-  args.prog_name = strtok_r(command_args, " ", &args.prog_arg_ptr);
+  args.prog_name = strtok_r(ca_copy, " ", &args.prog_arg_ptr);
 
   /* Create a new thread to execute command_args. */
   tid = thread_create (args.prog_name, PRI_DEFAULT, start_process, &args);
@@ -100,7 +100,7 @@ static void start_process (void *cmd_)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
-	while(1);
+	while(1) {}
   	return -1;
 }
 
@@ -466,10 +466,14 @@ setup_stack (void **esp, char * args)
     }
 
     // allocate memory to argv
-    char * argv[argc];
+    char * argv[argc+1];
+    // Set last to null
+    argv[argc] = malloc(sizeof(char));
+    argv[argc] = 0;
+
 
     // push everything onto stack
-    int count = argc;
+    int count = argc - 1;
     while(count >=0) {
       /* 
       to push: 
@@ -480,7 +484,7 @@ setup_stack (void **esp, char * args)
       *esp -= strlen(tokens[count]) + 1;
       memcpy(*esp, tokens[count], strlen(tokens[count])+1);
       argv[count] = malloc(strlen((char *)*esp)+1);
-      argv[count] = (char *)*esp;
+      argv[count] = *esp;
     }
 
     // word-align, make address a multiple of 4
@@ -490,25 +494,28 @@ setup_stack (void **esp, char * args)
       memcpy(*esp, &word_align, sizeof(char));
     }
 
-    // push argv onto stack
+    // push argv elements onto stack
     count = argc;
-    *esp -= sizeof(char);
-    memcpy(*esp, &word_align, sizeof(char));
 
     while(count >=0) {
-      *esp -= sizeof(int);
-      memcpy(*esp,argv[count],strlen(argv[count])+1);
+      *esp -= 4;
+      memcpy(*esp,argv[count],4);
       count--;
     }
+    
+    // place argv on stack
     *esp -= 4;
-    memcpy(*esp, argv, 4);
+    memcpy(*esp, &argv, sizeof(char**));
 
+    // place argc on stack
     *esp -= sizeof(int);
     memcpy(*esp, &argc, sizeof(int));
 
     // fake return address
-    *esp -= sizeof(char);
-    memcpy(*esp, &word_align, sizeof(char));
+    *esp -= 4;
+    memcpy(*esp, &word_align, sizeof(void*));
+
+    free(args);
 
 
   return success;
